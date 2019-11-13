@@ -17,7 +17,7 @@ namespace SpikeNL.Forms
         {
             InitializeComponent();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 100; i++)
             {
                 Environment.Core.AddUnit(new Environment.Body.FreeRunner());
             }
@@ -27,7 +27,7 @@ namespace SpikeNL.Forms
                 while (true)
                 {
                     Environment.Core.Update();
-                    System.Threading.Thread.Sleep(1);
+                    System.Threading.Thread.Sleep(0);
                 }
             }).Start();
         }

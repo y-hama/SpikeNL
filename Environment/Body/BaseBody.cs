@@ -15,7 +15,7 @@ namespace Environment.Body
     {
         public double X { get; protected set; } = Background.Vision.Image.Width / 2;
         public double Y { get; protected set; } = Background.Vision.Image.Height / 2;
-        public double Direction { get; set; } = 360 * random.NextDouble();
+        public double Direction { get; set; } = 0;
         public double Angle
         {
             get { return Math.PI * Direction / 180; }

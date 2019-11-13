@@ -34,14 +34,14 @@ namespace Environment.Body
             foreach (var item in Sonares)
             {
                 Color p = Color.Gray;
-                byte a = 50;
+                byte a = 25;
                 if (item.Px >= -10 && item.Px < Background.Vision.Image.Width + 10 &&
                     item.Py >= -10 && item.Py < Background.Vision.Image.Height + 10)
                 {
                     if (Math.Abs(item.Distance) < WallCollisionRatio * Size)
                     {
                         p = Color.Red;
-                        a = 100;
+                        a = 50;
                     }
                     g.DrawLine(new Pen(Color.FromArgb(a, p), 1), new Point((int)X, (int)Y), new Point((int)item.Px, (int)item.Py));
                     g.FillEllipse(new SolidBrush(Color.FromArgb(a, p)), (int)item.Px - makesize, (int)item.Py - makesize, 2 * makesize, 2 * makesize);

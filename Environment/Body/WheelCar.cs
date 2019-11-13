@@ -19,7 +19,7 @@ namespace Environment.Body
 
         public void SetWheel(double l, double r)
         {
-            double error = 0.1;
+            double error = 0.01;
             double rho = 0.5;
             wl = rho * wl + (1 - rho) * l + error * (random.NextDouble() * 2 - 1);
             wr = rho * wr + (1 - rho) * r + error * (random.NextDouble() * 2 - 1);
