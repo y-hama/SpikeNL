@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpikeNL", "SpikeNL\SpikeNL.csproj", "{BFE84A11-0E1F-4C09-B353-0ED8AF019F55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Environment", "Environment\Environment.csproj", "{73809549-DDEE-48E8-B444-087690C0E208}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BFE84A11-0E1F-4C09-B353-0ED8AF019F55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFE84A11-0E1F-4C09-B353-0ED8AF019F55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFE84A11-0E1F-4C09-B353-0ED8AF019F55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFE84A11-0E1F-4C09-B353-0ED8AF019F55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73809549-DDEE-48E8-B444-087690C0E208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73809549-DDEE-48E8-B444-087690C0E208}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73809549-DDEE-48E8-B444-087690C0E208}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73809549-DDEE-48E8-B444-087690C0E208}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
