@@ -19,8 +19,8 @@ namespace Environment.Body
 
         public void SetWheel(double l, double r)
         {
-            double error = 0.01;
-            double rho = 0.5;
+            double error = 0.05;
+            double rho = 0.85;
             wl = rho * wl + (1 - rho) * l + error * (random.NextDouble() * 2 - 1);
             wr = rho * wr + (1 - rho) * r + error * (random.NextDouble() * 2 - 1);
         }
@@ -28,7 +28,7 @@ namespace Environment.Body
         public override void Growup()
         {
             double l, r;
-            l = r = 4;
+            l = r = 1;
             WheelRotation(ref l, ref r);
             SetWheel(l, r);
         }

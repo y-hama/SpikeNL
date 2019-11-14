@@ -44,12 +44,23 @@ namespace Environment
 
         public static void Update()
         {
+            List<Body.BaseBody> remlist = new List<Body.BaseBody>();
             foreach (var item in Body.BodyList.UnitList)
             {
                 item.Growup();
-                item.Update();
+                if (item.IsDead)
+                {
+                    remlist.Add(item);
+                }
+                else
+                {
+                    item.Update();
+                }
             }
-
+            foreach (var item in remlist)
+            {
+                Body.BodyList.UnitList.Remove(item);
+            }
             UpdateShowImage();
             GC.Collect();
         }
@@ -60,7 +71,7 @@ namespace Environment
             var g = Graphics.FromImage(bitmap);
             foreach (var item in Body.BodyList.UnitList)
             {
-                item.DrawIcon(ref bitmap, ref g);
+                item.Draw(ref bitmap, ref g);
             }
             ShowImage = bitmap;
         }

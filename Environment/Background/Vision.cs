@@ -47,5 +47,13 @@ namespace Environment.Background
             b += 0.001 * r;
             return Math.Max(0, Math.Min(b, 1));
         }
+
+        public static bool IsWall(int x, int y)
+        {
+            byte b = Image.GetPixel(x, y).B;
+            if (b > 100) { return true; }
+            else { return false; }
+
+        }
     }
 }

@@ -12,19 +12,20 @@ namespace SpikeNL.Forms
 {
     public partial class MainForm : Form
     {
+        private bool isTerminate { get; set; }
 
         public MainForm()
         {
             InitializeComponent();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Environment.Core.AddUnit(new Environment.Body.FreeRunner());
             }
 
             new System.Threading.Tasks.Task(() =>
             {
-                while (true)
+                while (!isTerminate)
                 {
                     Environment.Core.Update();
                     System.Threading.Thread.Sleep(0);
@@ -64,6 +65,11 @@ namespace SpikeNL.Forms
             //    default:
             //        break;
             //}
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            isTerminate = true;
         }
     }
 }

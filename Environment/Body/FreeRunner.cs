@@ -13,13 +13,13 @@ namespace Environment.Body
         private List<Sensor.Sonar> Sonares { get; set; } = new List<Sensor.Sonar>();
         #endregion
 
-        public double WallCollisionRatio { get; set; } = 4;
+        public double WallCollisionRatio { get; set; } = 2;
 
         #region Constructor
         public FreeRunner()
         {
-            int area = 45;
-            for (int i = -area; i <= area; i += 5)
+            int area = 60;
+            for (int i = -area; i <= area; i += 10)
             {
                 Sonares.Add(new Sensor.Sonar(i));
             }
@@ -41,53 +41,86 @@ namespace Environment.Body
                     if (Math.Abs(item.Distance) < WallCollisionRatio * Size)
                     {
                         p = Color.Red;
-                        a = 50;
+                        a = byte.MaxValue;
                     }
                     g.DrawLine(new Pen(Color.FromArgb(a, p), 1), new Point((int)X, (int)Y), new Point((int)item.Px, (int)item.Py));
                     g.FillEllipse(new SolidBrush(Color.FromArgb(a, p)), (int)item.Px - makesize, (int)item.Py - makesize, 2 * makesize, 2 * makesize);
                 }
             }
 
-            g.DrawEllipse(new Pen(Color.Red, 2), (int)(X - Size / 2), (int)(Y - Size / 2), (int)Size, (int)Size);
-            g.DrawEllipse(new Pen(Color.Red, 2), (int)(X - 1), (int)(Y - 1), (int)3, (int)3);
+            g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - Size / 2), (int)(Y - Size / 2), (int)Size, (int)Size);
+            g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - 1), (int)(Y - 1), (int)3, (int)3);
         }
 
         public override void WheelRotation(ref double left, ref double right)
         {
             #region CollisionCheck
             double nnx = 0, nny = 0, direction = 0, xcnt = 0;
+            int nearestid = -1;
+            double dist = double.MaxValue;
             foreach (var item in Sonares)
             {
                 item.Update(X, Y, Direction);
-                if (item.Distance < WallCollisionRatio * Size)
+                if (item.Distance < dist)
                 {
-                    nnx += item.Nx; nny += item.Ny; direction += item.RelativeDirection;
-                    xcnt++;
+                    nearestid = item.ID;
+                    dist = item.Distance;
                 }
             }
-            if (xcnt > 0)
+            if (dist < BaseBody.Size / 2)
             {
-                nnx /= xcnt; nny /= xcnt; direction /= xcnt;
-                if (direction > 360) { direction -= 360; }
-                else if (direction < 0) { direction += 360; }
-
-                double gratio = 2;
-                if (direction < 90)
+                this.IsDead = true;
+            }
+            else
+            {
+                double ratio = 1;
+                foreach (var item in Sonares)
                 {
-                    double ratio = (90 - direction) / 90;
-                    left /= gratio;
-                    right *= gratio * ratio;
+                    if (item.Distance < WallCollisionRatio * Size)
+                    {
+                        nnx += ratio * item.Nx; nny += ratio * item.Ny; direction += ratio * item.RelativeDirection;
+                        xcnt++;
+                    }
                 }
-                else if (direction > 270)
+                if (xcnt > 0)
                 {
-                    double ratio = (direction - 270) / 90;
-                    left *= gratio * ratio;
-                    right /= gratio;
+                    nnx /= xcnt; nny /= xcnt; direction /= xcnt;
+                    double dir = Math.Atan2(nny, nnx) * 180 / Math.PI;
+                    if (direction > 360) { direction -= 360; }
+                    else if (direction < 0) { direction += 360; }
+
+                    double gratio = 1.5;
+                    if (direction < 10 || direction > 350)
+                    {
+                        var frontsens = (Sonares.Find(x => x.RelativeDirection == 0));
+                        if (frontsens != null && frontsens.Distance < BaseBody.Size * 3)
+                        {
+                            left *= -random.NextDouble(); right *= -random.NextDouble();
+                        }
+                    }
+                    else
+                    {
+                        if (direction < 90)
+                        {
+                            {
+                                ratio = (90 - (direction - 45)) / 90;
+                                left /= -gratio;
+                                right *= gratio;
+                            }
+                        }
+                        else if (direction > 270)
+                        {
+                            {
+                                ratio = ((direction - 45) - 270) / 90;
+                                left *= gratio;
+                                right /= -gratio;
+                            }
+                        }
+                    }
                 }
             }
             #endregion
 
-            //left = random.NextDouble(); right = random.NextDouble();
         }
     }
 }

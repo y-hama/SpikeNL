@@ -8,6 +8,8 @@ namespace Environment.Body.Sensor
 {
     class Sonar
     {
+        private static int _seed { get; set; } = 0;
+        public int ID { get; private set; }
 
         public double RelativeDirection { get; private set; }
 
@@ -23,6 +25,7 @@ namespace Environment.Body.Sensor
 
         public Sonar(double direction)
         {
+            ID = _seed++;
             RelativeDirection = direction;
             AreaWidth = Background.Vision.Image.Width;
             AreaHeight = Background.Vision.Image.Height;
@@ -32,6 +35,36 @@ namespace Environment.Body.Sensor
         {
             Nx = Math.Cos(Math.PI * (RelativeDirection + direction) / 180);
             Ny = Math.Sin(Math.PI * (RelativeDirection + direction) / 180);
+
+            double rectBorder = RectangleBorder(x, y, Nx, Ny);
+            double ellipseBorder = WallBorder(x, y, Nx, Ny, rectBorder);
+            Distance = ellipseBorder;
+
+            double mb = 0;
+            if (BodyList.UnitList.Count > 1)
+            {
+                double ppx = 0, ppy = 0;
+                while (mb < Distance)
+                {
+                    ppx = x + mb * Nx;
+                    ppy = y + mb * Ny;
+                    double distmin = double.MaxValue;
+                    foreach (var item in BodyList.UnitList)
+                    {
+                        if (item.X == x && item.Y == y) { continue; }
+                        double dist = Math.Sqrt((ppx - item.X) * (ppx - item.X) + (ppy - item.Y) * (ppy - item.Y));
+                        if (dist < BaseBody.Size && dist < distmin) { Distance = mb; distmin = dist; }
+                    }
+                    mb += 1.0;
+                }
+            }
+            Px = x + Distance * Nx;
+            Py = y + Distance * Ny;
+        }
+
+        private double RectangleBorder(double x, double y, double nx, double ny)
+        {
+            double ret = 0;
             double s1, s2, s3, s4;
             s1 = (0 - x) / Nx;
             s2 = (AreaWidth - x) / Nx;
@@ -44,11 +77,23 @@ namespace Environment.Body.Sensor
             if (s4 >= 0) { spp.Add(s4); }
             if (spp.Count > 0)
             {
-                Distance = spp.Min();
+                ret = spp.Min();
             }
+            return ret;
+        }
 
-            Px = x + Distance * Nx;
-            Py = y + Distance * Ny;
+        private double WallBorder(double px, double py, double nx, double ny, double maxdist)
+        {
+            double ret = 0;
+            while (ret < maxdist)
+            {
+                if (Background.Vision.IsWall((int)(px + ret * nx), (int)(py + ret * ny)))
+                {
+                    break;
+                }
+                ret++;
+            }
+            return ret;
         }
     }
 }
