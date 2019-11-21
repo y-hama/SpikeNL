@@ -13,16 +13,36 @@ namespace Environment.Body
         private List<Sensor.Sonar> Sonares { get; set; } = new List<Sensor.Sonar>();
         #endregion
 
-        public double WallCollisionRatio { get; set; } = 2;
+        public double WallCollisionRatio { get; set; } = 3;
+
+        public int ViewAngle { get; set; } = 80;
+        public int ViewResolition { get; set; } = 10;
+        private List<int> ViewAngles { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65, 85, 110 };
+
+        public double[] ToF_Distance { get; private set; }
 
         #region Constructor
         public FreeRunner()
         {
-            int area = 60;
-            for (int i = -area; i <= area; i += 10)
+            for (int i = ViewAngles.Count - 1; i >= 0; i--)
             {
-                Sonares.Add(new Sensor.Sonar(i));
+                Sonares.Add(new Sensor.Sonar(-ViewAngles[i]));
             }
+            for (int i = 1; i < ViewAngles.Count; i++)
+            {
+                Sonares.Add(new Sensor.Sonar(ViewAngles[i]));
+            }
+
+
+            //for (int i = -ViewAngle; i < 0; i += ViewResolition)
+            //{
+            //    Sonares.Add(new Sensor.Sonar(i));
+            //}
+            //Sonares.Add(new Sensor.Sonar(0));
+            //for (int i = ViewResolition; i <= ViewAngle; i += ViewResolition)
+            //{
+            //    Sonares.Add(new Sensor.Sonar(i));
+            //}
         }
         #endregion
 
@@ -40,7 +60,7 @@ namespace Environment.Body
                 {
                     if (Math.Abs(item.Distance) < WallCollisionRatio * Size)
                     {
-                        p = Color.Red;
+                        p = Color.OrangeRed;
                         a = byte.MaxValue;
                     }
                     g.DrawLine(new Pen(Color.FromArgb(a, p), 1), new Point((int)X, (int)Y), new Point((int)item.Px, (int)item.Py));
@@ -48,6 +68,7 @@ namespace Environment.Body
                 }
             }
 
+            g.DrawLine(Pens.LightGreen, new Point((int)X, (int)Y), new Point((int)(X + 20 * Vx), (int)(Y + 20 * Vy)));
             g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - Size / 2), (int)(Y - Size / 2), (int)Size, (int)Size);
             g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - 1), (int)(Y - 1), (int)3, (int)3);
         }
@@ -58,9 +79,14 @@ namespace Environment.Body
             double nnx = 0, nny = 0, direction = 0, xcnt = 0;
             int nearestid = -1;
             double dist = double.MaxValue;
+            ToF_Distance = new double[Sonares.Count];
+            int idx = 0;
             foreach (var item in Sonares)
             {
                 item.Update(X, Y, Direction);
+                ToF_Distance[idx] = (item.Distance);
+
+                idx++;
                 if (item.Distance < dist)
                 {
                     nearestid = item.ID;
@@ -121,6 +147,32 @@ namespace Environment.Body
             }
             #endregion
 
+        }
+
+        public override void ViewImage(out Bitmap bitmap)
+        {
+            bitmap = new Bitmap(ToF_Distance.Length, 1);
+            double max = ToF_Distance.Max();
+            for (int i = 0; i < ToF_Distance.Length; i++)
+            {
+                double d = 0;
+                if (ToF_Distance[i] < (WallCollisionRatio * Size))
+                {
+                    d = Math.Pow(Math.Exp(-(ToF_Distance[i] / 2) / (WallCollisionRatio * Size)), 1);
+                }
+                else
+                {
+                    d = Math.Pow(Math.Exp(-ToF_Distance[i] / (WallCollisionRatio * Size)), 1);
+
+                }
+                double dr, dg, db;
+                double shift = Math.PI + Math.PI / 4;
+                dr = byte.MaxValue * (Math.Sin(1.5 * Math.PI * d + shift) + 1) / 2;
+                dg = byte.MaxValue * (Math.Sin(1.5 * Math.PI * d + shift + Math.PI / 2) + 1) / 2;
+                db = byte.MaxValue * (Math.Sin(1.5 * Math.PI * d + shift + Math.PI) + 1) / 2;
+
+                bitmap.SetPixel(i, 0, Color.FromArgb((byte)dr, (byte)dg, (byte)db));
+            }
         }
     }
 }

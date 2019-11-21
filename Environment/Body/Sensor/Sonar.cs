@@ -37,26 +37,12 @@ namespace Environment.Body.Sensor
             Ny = Math.Sin(Math.PI * (RelativeDirection + direction) / 180);
 
             double rectBorder = RectangleBorder(x, y, Nx, Ny);
-            double ellipseBorder = WallBorder(x, y, Nx, Ny, rectBorder);
-            Distance = ellipseBorder;
+            double wallBorder = WallBorder(x, y, Nx, Ny, rectBorder);
+            Distance = wallBorder;
 
-            double mb = 0;
             if (BodyList.UnitList.Count > 1)
             {
-                double ppx = 0, ppy = 0;
-                while (mb < Distance)
-                {
-                    ppx = x + mb * Nx;
-                    ppy = y + mb * Ny;
-                    double distmin = double.MaxValue;
-                    foreach (var item in BodyList.UnitList)
-                    {
-                        if (item.X == x && item.Y == y) { continue; }
-                        double dist = Math.Sqrt((ppx - item.X) * (ppx - item.X) + (ppy - item.Y) * (ppy - item.Y));
-                        if (dist < BaseBody.Size && dist < distmin) { Distance = mb; distmin = dist; }
-                    }
-                    mb += 1.0;
-                }
+                Distance = Math.Min(Distance, UnitBorder(x, y, Nx, Ny, Distance));
             }
             Px = x + Distance * Nx;
             Py = y + Distance * Ny;
@@ -92,6 +78,33 @@ namespace Environment.Body.Sensor
                     break;
                 }
                 ret++;
+            }
+            return ret;
+        }
+
+        private double UnitBorder(double x, double y, double nx, double ny, double maxdist)
+        {
+            double ret = double.MaxValue;
+            double ppx = 0, ppy = 0;
+            double mb = 0;
+            bool col = false;
+            while (mb < maxdist)
+            {
+                ppx = x + mb * nx;
+                ppy = y + mb * ny;
+                double distmin = double.MaxValue;
+                foreach (var item in BodyList.UnitList)
+                {
+                    if (item.X == x && item.Y == y) { continue; }
+                    double dist = Math.Sqrt((ppx - item.X) * (ppx - item.X) + (ppy - item.Y) * (ppy - item.Y));
+                    if (dist < BaseBody.Size / 2 && dist < distmin) { ret = mb; distmin = dist; col = true; }
+                }
+                if (col)
+                { break; }
+                else
+                {
+                    mb += 1.0;
+                }
             }
             return ret;
         }

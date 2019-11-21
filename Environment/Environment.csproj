@@ -45,7 +45,6 @@
     <Compile Include="Body\BaseBody.cs" />
     <Compile Include="Body\FreeRunner.cs" />
     <Compile Include="Body\Sensor\Sonar.cs" />
-    <Compile Include="Body\Tracker.cs" />
     <Compile Include="Body\WheelCar.cs" />
     <Compile Include="Core.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

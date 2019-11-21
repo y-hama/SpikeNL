@@ -23,6 +23,12 @@ namespace Environment.Body
 
         public static double Size { get; set; } = 20;
 
+        public double Vx { get; protected set; }
+        public double Vy { get; protected set; }
+        public double V { get { return Math.Sqrt(Vx * Vx + Vy * Vy); } }
+
+        public double W { get; protected set; }
+
         public bool IsDead { get; set; }
 
         private Queue<System.Drawing.PointF> Trajectory { get; set; } = new Queue<System.Drawing.PointF>();
@@ -47,5 +53,9 @@ namespace Environment.Body
         public abstract void Update();
         public abstract void Growup();
 
+        public virtual void ViewImage(out System.Drawing.Bitmap bitmap)
+        {
+            bitmap = new System.Drawing.Bitmap(1, 1);
+        }
     }
 }

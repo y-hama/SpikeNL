@@ -23,6 +23,14 @@ namespace Environment.Background
 
         public static Bitmap Image { get; set; }
 
+        public static double DiagonalSize
+        {
+            get
+            {
+                return Math.Sqrt(Image.Width * Image.Width + Image.Height * Image.Height);
+            }
+        }
+
         public static double GetAroundBrightness(int x, int y, int size)
         {
             double b = 0, cnt = 0;

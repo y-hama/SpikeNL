@@ -27,15 +27,33 @@ namespace SpikeNL.Forms
             {
                 while (!isTerminate)
                 {
+                    DateTime time = DateTime.Now;
                     Environment.Core.Update();
-                    System.Threading.Thread.Sleep(0);
+                    double wait = 10 - (DateTime.Now - time).TotalMilliseconds;
+                    System.Threading.Thread.Sleep((int)Math.Max(wait, 0));
                 }
             }).Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            pictureBox1.Image = Environment.Core.ShowImage;
+            if (this.WindowState != FormWindowState.Minimized)
+            {
+                if (Environment.Core.ShowImage != null)
+                {
+                    pictureBox1.Image = Environment.Core.ShowImage;
+                }
+
+                if (Environment.Core.RepresentView != null)
+                {
+                    Bitmap resizeBmp = new Bitmap(pictureBox2.Width, pictureBox2.Height);
+                    Graphics g = Graphics.FromImage(resizeBmp);
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    g.DrawImage(Environment.Core.RepresentView, 0, 0, pictureBox2.Width, pictureBox2.Height);
+                    g.Dispose();
+                    pictureBox2.Image = resizeBmp;
+                }
+            }
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)

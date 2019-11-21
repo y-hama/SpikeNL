@@ -11,7 +11,7 @@ namespace Environment.Body
     {
 
         #region Property/Field
-        public double WheelRadius { get; set; } = 2;
+        public double WheelRadius { get; set; } = 2.5;
 
         private double wr { get; set; }
         private double wl { get; set; }
@@ -20,7 +20,7 @@ namespace Environment.Body
         public void SetWheel(double l, double r)
         {
             double error = 0.05;
-            double rho = 0.85;
+            double rho = 0.9;
             wl = rho * wl + (1 - rho) * l + error * (random.NextDouble() * 2 - 1);
             wr = rho * wr + (1 - rho) * r + error * (random.NextDouble() * 2 - 1);
         }
@@ -30,6 +30,8 @@ namespace Environment.Body
             double l, r;
             l = r = 1;
             WheelRotation(ref l, ref r);
+            double n = Math.Sqrt(l * l + r * r);
+            l /= n;r /= n;
             SetWheel(l, r);
         }
 

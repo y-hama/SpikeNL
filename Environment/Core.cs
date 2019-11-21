@@ -15,6 +15,7 @@ namespace Environment
         }
 
         public static Bitmap ShowImage { get; private set; }
+        public static Bitmap RepresentView { get; private set; }
 
         public static void SetVision(Background.ModeType mode, Bitmap bitmap = null)
         {
@@ -41,6 +42,10 @@ namespace Environment
             Body.BodyList.UnitList.Add(body);
         }
 
+        public static Body.BaseBody GetRepresentUnit()
+        {
+            return Body.BodyList.UnitList[0];
+        }
 
         public static void Update()
         {
@@ -67,13 +72,32 @@ namespace Environment
 
         private static void UpdateShowImage()
         {
-            var bitmap = (Bitmap)View.Clone();
-            var g = Graphics.FromImage(bitmap);
-            foreach (var item in Body.BodyList.UnitList)
+            try
             {
-                item.Draw(ref bitmap, ref g);
+                var bitmap = (Bitmap)View.Clone();
+                var g = Graphics.FromImage(bitmap);
+                foreach (var item in Body.BodyList.UnitList)
+                {
+                    item.Draw(ref bitmap, ref g);
+                }
+
+                if (Body.BodyList.UnitList.Count > 0)
+                {
+                    var rep = Body.BodyList.UnitList[0];
+                    g.DrawRectangle(new Pen(Color.Violet, 5), new Rectangle((int)(rep.X - Body.BaseBody.Size / 4), (int)(rep.Y - Body.BaseBody.Size / 4), (int)Body.BaseBody.Size / 2, (int)Body.BaseBody.Size / 2));
+
+                    Bitmap repView;
+                    rep.ViewImage(out repView);
+                    RepresentView = repView;
+                }
+
+                ShowImage = bitmap;
+
             }
-            ShowImage = bitmap;
+            catch (Exception)
+            {
+
+            }
         }
 
     }
