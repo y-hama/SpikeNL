@@ -53,6 +53,8 @@ namespace Environment.Body
         public abstract void Update();
         public abstract void Growup();
 
+        public abstract BaseBody InheritanceNew();
+
         public virtual void ViewImage(out System.Drawing.Bitmap bitmap)
         {
             bitmap = new System.Drawing.Bitmap(1, 1);

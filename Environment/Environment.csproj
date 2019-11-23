@@ -44,6 +44,7 @@
     <Compile Include="Background\Vision.cs" />
     <Compile Include="Body\BaseBody.cs" />
     <Compile Include="Body\FreeRunner.cs" />
+    <Compile Include="Body\GeneticRunner.cs" />
     <Compile Include="Body\Sensor\Sonar.cs" />
     <Compile Include="Body\WheelCar.cs" />
     <Compile Include="Core.cs" />

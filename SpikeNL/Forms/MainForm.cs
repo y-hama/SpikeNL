@@ -18,9 +18,9 @@ namespace SpikeNL.Forms
         {
             InitializeComponent();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
-                Environment.Core.AddUnit(new Environment.Body.FreeRunner());
+                Environment.Core.AddUnit(new Environment.Body.GeneticRunner());
             }
 
             new System.Threading.Tasks.Task(() =>
@@ -44,14 +44,15 @@ namespace SpikeNL.Forms
                     pictureBox1.Image = Environment.Core.ShowImage;
                 }
 
-                if (Environment.Core.RepresentView != null)
+                if (Environment.Core.HasRepresentView)
                 {
-                    Bitmap resizeBmp = new Bitmap(pictureBox2.Width, pictureBox2.Height);
-                    Graphics g = Graphics.FromImage(resizeBmp);
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                    g.DrawImage(Environment.Core.RepresentView, 0, 0, pictureBox2.Width, pictureBox2.Height);
-                    g.Dispose();
-                    pictureBox2.Image = resizeBmp;
+                    pictureBox2.Image = Environment.Core.RepresentView(pictureBox1.Size);
+                    //Bitmap resizeBmp = new Bitmap(pictureBox2.Width, pictureBox2.Height);
+                    //Graphics g = Graphics.FromImage(resizeBmp);
+                    //g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    //g.DrawImage(view, 0, 0, pictureBox2.Width, pictureBox2.Height);
+                    //g.Dispose();
+                    //= resizeBmp;
                 }
             }
         }
@@ -62,27 +63,6 @@ namespace SpikeNL.Forms
 
         private void MainForm_KeyUp(object sender, KeyEventArgs e)
         {
-            //double acc = 0.25;
-            //switch (e.KeyData)
-            //{
-            //    case Keys.Up:
-            //        tracker[0].SetOptionalWheel(0.25, acc);
-            //        break;
-            //    case Keys.Down:
-            //        tracker[0].SetOptionalWheel(-acc, -acc);
-            //        break;
-            //    case Keys.Left:
-            //        tracker[0].SetOptionalWheel(-acc, acc);
-            //        break;
-            //    case Keys.Right:
-            //        tracker[0].SetOptionalWheel(acc, -acc);
-            //        break;
-            //    case Keys.Space:
-            //        tracker[0].SetOptionalWheel(0, 0);
-            //        break;
-            //    default:
-            //        break;
-            //}
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

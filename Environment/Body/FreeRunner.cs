@@ -13,17 +13,24 @@ namespace Environment.Body
         private List<Sensor.Sonar> Sonares { get; set; } = new List<Sensor.Sonar>();
         #endregion
 
-        public double WallCollisionRatio { get; set; } = 3;
+        public double WallCollisionRatio { get; set; } = 2;
 
-        public int ViewAngle { get; set; } = 80;
-        public int ViewResolition { get; set; } = 10;
-        private List<int> ViewAngles { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65, 85, 110 };
+        protected List<int> ViewAngles { get; set; } = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 8, 10, 13, 16, 20, 25, 30, 40, 50, 65, 85 };
 
-        public double[] ToF_Distance { get; private set; }
+        public double[] ToF_Distance { get; protected set; }
+
+        protected Color Color { get; set; } = Color.Yellow;
+
+        protected virtual void SetColor()
+        {
+            Color = Color.Yellow;
+        }
 
         #region Constructor
         public FreeRunner()
         {
+            SetColor();
+
             for (int i = ViewAngles.Count - 1; i >= 0; i--)
             {
                 Sonares.Add(new Sensor.Sonar(-ViewAngles[i]));
@@ -69,15 +76,12 @@ namespace Environment.Body
             }
 
             g.DrawLine(Pens.LightGreen, new Point((int)X, (int)Y), new Point((int)(X + 20 * Vx), (int)(Y + 20 * Vy)));
-            g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - Size / 2), (int)(Y - Size / 2), (int)Size, (int)Size);
-            g.DrawEllipse(new Pen(Color.Yellow, 2), (int)(X - 1), (int)(Y - 1), (int)3, (int)3);
+            g.DrawEllipse(new Pen(Color, 2), (int)(X - Size / 2), (int)(Y - Size / 2), (int)Size, (int)Size);
+            g.DrawEllipse(new Pen(Color, 2), (int)(X - 1), (int)(Y - 1), (int)3, (int)3);
         }
 
-        public override void WheelRotation(ref double left, ref double right)
+        protected double UpdateSonar()
         {
-            #region CollisionCheck
-            double nnx = 0, nny = 0, direction = 0, xcnt = 0;
-            int nearestid = -1;
             double dist = double.MaxValue;
             ToF_Distance = new double[Sonares.Count];
             int idx = 0;
@@ -89,10 +93,17 @@ namespace Environment.Body
                 idx++;
                 if (item.Distance < dist)
                 {
-                    nearestid = item.ID;
                     dist = item.Distance;
                 }
             }
+            return dist;
+        }
+
+        public override void WheelRotation(ref double left, ref double right)
+        {
+            #region CollisionCheck
+            double nnx = 0, nny = 0, direction = 0, xcnt = 0;
+            double dist = UpdateSonar();
             if (dist < BaseBody.Size / 2)
             {
                 this.IsDead = true;
@@ -149,6 +160,10 @@ namespace Environment.Body
 
         }
 
+        public override BaseBody InheritanceNew()
+        {
+            return new FreeRunner();
+        }
         public override void ViewImage(out Bitmap bitmap)
         {
             bitmap = new Bitmap(ToF_Distance.Length, 1);
@@ -174,5 +189,6 @@ namespace Environment.Body
                 bitmap.SetPixel(i, 0, Color.FromArgb((byte)dr, (byte)dg, (byte)db));
             }
         }
+
     }
 }

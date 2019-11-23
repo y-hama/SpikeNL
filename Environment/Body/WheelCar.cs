@@ -13,16 +13,17 @@ namespace Environment.Body
         #region Property/Field
         public double WheelRadius { get; set; } = 2.5;
 
+        public double Error { get; set; } = 0.025;
+        public double Inertia { get; set; } = 0.85;
+
         private double wr { get; set; }
         private double wl { get; set; }
         #endregion
 
         public void SetWheel(double l, double r)
         {
-            double error = 0.05;
-            double rho = 0.9;
-            wl = rho * wl + (1 - rho) * l + error * (random.NextDouble() * 2 - 1);
-            wr = rho * wr + (1 - rho) * r + error * (random.NextDouble() * 2 - 1);
+            wl = Inertia * wl + (1 - Inertia) * l + Error * (random.NextDouble() * 2 - 1);
+            wr = Inertia * wr + (1 - Inertia) * r + Error * (random.NextDouble() * 2 - 1);
         }
 
         public override void Growup()
@@ -31,7 +32,10 @@ namespace Environment.Body
             l = r = 1;
             WheelRotation(ref l, ref r);
             double n = Math.Sqrt(l * l + r * r);
-            l /= n;r /= n;
+            if (n > 1)
+            {
+                l /= n; r /= n;
+            }
             SetWheel(l, r);
         }
 

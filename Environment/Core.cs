@@ -15,7 +15,27 @@ namespace Environment
         }
 
         public static Bitmap ShowImage { get; private set; }
-        public static Bitmap RepresentView { get; private set; }
+
+        public static bool HasRepresentView
+        {
+            get { return innerRepresentView == null ? false : true; }
+        }
+        private static Bitmap innerRepresentView { get; set; }
+        public static Bitmap RepresentView(Size size)
+        {
+            Bitmap res = (Bitmap)innerRepresentView.Clone();
+            Bitmap view = new Bitmap(size.Width, size.Height);
+            Graphics g = Graphics.FromImage(view);
+            g.FillRectangle(Brushes.Black, new Rectangle(new Point(), size));
+
+            int stepsize = (int)(size.Width / res.Width) + 1;
+            for (int i = 0; i < res.Width; i++)
+            {
+                Color c = res.GetPixel(i, 0);
+                g.FillRectangle(new SolidBrush(c), new Rectangle(new Point(i * stepsize, 0), new Size(stepsize, size.Height)));
+            }
+            return view;
+        }
 
         public static void SetVision(Background.ModeType mode, Bitmap bitmap = null)
         {
@@ -64,7 +84,12 @@ namespace Environment
             }
             foreach (var item in remlist)
             {
+                var reborn = item.InheritanceNew();
                 Body.BodyList.UnitList.Remove(item);
+                if (reborn != null)
+                {
+                    AddUnit(reborn);
+                }
             }
             UpdateShowImage();
             GC.Collect();
@@ -84,11 +109,11 @@ namespace Environment
                 if (Body.BodyList.UnitList.Count > 0)
                 {
                     var rep = Body.BodyList.UnitList[0];
-                    g.DrawRectangle(new Pen(Color.Violet, 5), new Rectangle((int)(rep.X - Body.BaseBody.Size / 4), (int)(rep.Y - Body.BaseBody.Size / 4), (int)Body.BaseBody.Size / 2, (int)Body.BaseBody.Size / 2));
+                    g.DrawEllipse(new Pen(Color.MediumVioletRed, 5), new Rectangle((int)(rep.X - Body.BaseBody.Size / 4), (int)(rep.Y - Body.BaseBody.Size / 4), (int)Body.BaseBody.Size / 2, (int)Body.BaseBody.Size / 2));
 
                     Bitmap repView;
                     rep.ViewImage(out repView);
-                    RepresentView = repView;
+                    innerRepresentView = repView;
                 }
 
                 ShowImage = bitmap;
