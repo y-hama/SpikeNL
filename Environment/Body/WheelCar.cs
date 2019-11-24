@@ -22,27 +22,33 @@ namespace Environment.Body
 
         public void SetWheel(double l, double r)
         {
-            wl = Inertia * wl + (1 - Inertia) * l + Error * (random.NextDouble() * 2 - 1);
-            wr = Inertia * wr + (1 - Inertia) * r + Error * (random.NextDouble() * 2 - 1);
+            wl = Inertia * wl + (1 - Inertia) * l;
+            wr = Inertia * wr + (1 - Inertia) * r;
         }
 
-        public override void Growup()
+        public override void Growup(bool isUpdate = true)
         {
             double l, r;
             l = r = 1;
             WheelRotation(ref l, ref r);
-            double n = Math.Sqrt(l * l + r * r);
-            if (n > 1)
+            if (isUpdate)
             {
-                l /= n; r /= n;
+                l += Error * (random.NextDouble() * 2 - 1);
+                r += Error * (random.NextDouble() * 2 - 1);
+                double n = Math.Sqrt(l * l + r * r);
+                if (n > 1)
+                {
+                    l /= n; r /= n;
+                }
+                SetWheel(l, r);
             }
-            SetWheel(l, r);
         }
 
         public abstract void WheelRotation(ref double left, ref double right);
 
         public override void Update()
         {
+            double cX = X, cY = Y;
             if (wr == wl)
             {
                 double v = (wr + wl) / 2;
@@ -89,6 +95,7 @@ namespace Environment.Body
                 }
 
             }
+            Vx = (X - cX); Vy = (Y - cY);
         }
     }
 }

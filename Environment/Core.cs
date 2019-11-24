@@ -16,6 +16,8 @@ namespace Environment
 
         public static Bitmap ShowImage { get; private set; }
 
+        public static int Generation { get; private set; } = 0;
+
         public static bool HasRepresentView
         {
             get { return innerRepresentView == null ? false : true; }
@@ -76,6 +78,7 @@ namespace Environment
                 if (item.IsDead)
                 {
                     remlist.Add(item);
+                    Body.BodyList.DeadUnitList.Add(item);
                 }
                 else
                 {
@@ -84,12 +87,20 @@ namespace Environment
             }
             foreach (var item in remlist)
             {
-                var reborn = item.InheritanceNew();
                 Body.BodyList.UnitList.Remove(item);
-                if (reborn != null)
+            }
+            if (Body.BodyList.UnitList.Count == 0)
+            {
+                Generation++;
+                foreach (var item in Body.BodyList.DeadUnitList)
                 {
-                    AddUnit(reborn);
+                    var reborn = item.InheritanceNew();
+                    if (reborn != null)
+                    {
+                        AddUnit(reborn);
+                    }
                 }
+                Body.BodyList.DeadUnitList.Clear();
             }
             UpdateShowImage();
             GC.Collect();

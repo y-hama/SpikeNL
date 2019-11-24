@@ -9,12 +9,13 @@ namespace Environment.Body
     static class BodyList
     {
         public static List<Body.BaseBody> UnitList { get; set; } = new List<Body.BaseBody>();
+        public static List<Body.BaseBody> DeadUnitList { get; set; } = new List<Body.BaseBody>();
     }
 
     public abstract class BaseBody
     {
-        public double X { get; protected set; } = (Background.Vision.Image.Width / 2) * random.NextDouble() + Background.Vision.Image.Width / 4;
-        public double Y { get; protected set; } = (Background.Vision.Image.Height / 2) * random.NextDouble() + Background.Vision.Image.Height / 4;
+        public double X { get; protected set; } = (Background.Vision.Image.Width) * random.NextDouble();
+        public double Y { get; protected set; } = (Background.Vision.Image.Height) * random.NextDouble();
         public double Direction { get; set; } = random.NextDouble() * 360;
         public double Angle
         {
@@ -30,6 +31,11 @@ namespace Environment.Body
         public double W { get; protected set; }
 
         public bool IsDead { get; set; }
+
+        public BaseBody()
+        {
+            UninterferenceLocation();
+        }
 
         private Queue<System.Drawing.PointF> Trajectory { get; set; } = new Queue<System.Drawing.PointF>();
 
@@ -51,9 +57,21 @@ namespace Environment.Body
         }
         public abstract void DrawIcon(ref System.Drawing.Bitmap bitmap, ref System.Drawing.Graphics g);
         public abstract void Update();
-        public abstract void Growup();
+        public abstract void Growup(bool isUpdate = true);
 
         public abstract BaseBody InheritanceNew();
+
+        protected void UninterferenceLocation()
+        {
+            Growup(false);
+            while (this.IsDead)
+            {
+                this.IsDead = false;
+                X = (Background.Vision.Image.Width) * random.NextDouble();
+                Y = (Background.Vision.Image.Height) * random.NextDouble();
+                Growup(false);
+            }
+        }
 
         public virtual void ViewImage(out System.Drawing.Bitmap bitmap)
         {

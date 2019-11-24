@@ -24,11 +24,14 @@ namespace Environment.Body
                 this.IsDead = true;
             }
 
+            left = random.NextDouble();
+            right = random.NextDouble();
         }
 
         public override BaseBody InheritanceNew()
         {
-            return new GeneticRunner();
+            var item = new GeneticRunner();
+            return item;
         }
     }
 }

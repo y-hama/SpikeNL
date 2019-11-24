@@ -13,12 +13,13 @@ namespace SpikeNL.Forms
     public partial class MainForm : Form
     {
         private bool isTerminate { get; set; }
+        private double ProcessTime { get; set; }
 
         public MainForm()
         {
             InitializeComponent();
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Environment.Core.AddUnit(new Environment.Body.GeneticRunner());
             }
@@ -29,7 +30,8 @@ namespace SpikeNL.Forms
                 {
                     DateTime time = DateTime.Now;
                     Environment.Core.Update();
-                    double wait = 10 - (DateTime.Now - time).TotalMilliseconds;
+                    ProcessTime = (DateTime.Now - time).TotalMilliseconds;
+                    double wait = 10 - ProcessTime;
                     System.Threading.Thread.Sleep((int)Math.Max(wait, 0));
                 }
             }).Start();
@@ -37,6 +39,7 @@ namespace SpikeNL.Forms
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            label1.Text = Environment.Core.Generation.ToString() + " - " + ProcessTime.ToString();
             if (this.WindowState != FormWindowState.Minimized)
             {
                 if (Environment.Core.ShowImage != null)
