@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,23 +15,29 @@ namespace Environment.Body
 
     public abstract class BaseBody
     {
-        public double X { get; protected set; } = (Background.Vision.Image.Width) * random.NextDouble();
-        public double Y { get; protected set; } = (Background.Vision.Image.Height) * random.NextDouble();
-        public double Direction { get; set; } = random.NextDouble() * 360;
-        public double Angle
-        {
-            get { return Math.PI * Direction / 180; }
-        }
+        protected static Random random { get; set; } = new Random();
 
-        public static double Size { get; set; } = 20;
+        public Parameter Parameter { get; protected set; } = new Parameter();
 
-        public double Vx { get; protected set; }
-        public double Vy { get; protected set; }
-        public double V { get { return Math.Sqrt(Vx * Vx + Vy * Vy); } }
+        #region Property 
+        public bool IsDead { get { return Parameter.IsDead; } protected set { Parameter.IsDead = value; } }
+        public double AliveTime { get { return Parameter.AliveTime; } protected set { Parameter.AliveTime = value; } }
+        public double QualityAliveTime { get { return Parameter.QualityAliveTime; } protected set { Parameter.QualityAliveTime = value; } }
+        public double AliveRatio { get { return Parameter.AliveRatio; } }
 
-        public double W { get; protected set; }
+        public Color Color { get { return Parameter.Color; } protected set { Parameter.Color = value; } }
 
-        public bool IsDead { get; set; }
+        public double X { get { return Parameter.X; } protected set { Parameter.X = value; } }
+        public double Y { get { return Parameter.Y; } protected set { Parameter.Y = value; } }
+        public double Angle { get { return Parameter.Angle; } }
+        public double Direction { get { return Parameter.Direction; } protected set { Parameter.Direction = value; } }
+
+        public double Vx { get { return Parameter.Vx; } protected set { Parameter.Vx = value; } }
+        public double Vy { get { return Parameter.Vy; } protected set { Parameter.Vy = value; } }
+        public double V { get { return Parameter.V; } }
+
+        public double Size { get { return Parameter.Size; } protected set { Parameter.Size = value; } }
+        #endregion
 
         public BaseBody()
         {
@@ -39,7 +46,7 @@ namespace Environment.Body
 
         private Queue<System.Drawing.PointF> Trajectory { get; set; } = new Queue<System.Drawing.PointF>();
 
-        protected static Random random { get; set; } = new Random();
+        public void Kill() { IsDead = true; }
 
         public void Draw(ref System.Drawing.Bitmap bitmap, ref System.Drawing.Graphics g)
         {
@@ -56,19 +63,24 @@ namespace Environment.Body
             DrawIcon(ref bitmap, ref g);
         }
         public abstract void DrawIcon(ref System.Drawing.Bitmap bitmap, ref System.Drawing.Graphics g);
+
         public abstract void Update();
         public abstract void Growup(bool isUpdate = true);
 
-        public abstract BaseBody InheritanceNew();
+        public abstract BaseBody InheritanceNew(Parameter parameter, bool isMutation = false);
 
         protected void UninterferenceLocation()
         {
             Growup(false);
-            while (this.IsDead)
+            while (Parameter.IsDead)
             {
-                this.IsDead = false;
-                X = (Background.Vision.Image.Width) * random.NextDouble();
-                Y = (Background.Vision.Image.Height) * random.NextDouble();
+                Parameter.IsDead = false;
+                Parameter.X = (Background.Vision.Image.Width) * random.NextDouble();
+                Parameter.Y = (Background.Vision.Image.Height) * random.NextDouble();
+                if (Background.Vision.IsWall((int)Parameter.X, (int)Parameter.Y))
+                {
+                    continue;
+                }
                 Growup(false);
             }
         }

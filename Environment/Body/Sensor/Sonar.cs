@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Environment.Body.Sensor
 {
-    class Sonar
+    public class Sonar
     {
         private static int _seed { get; set; } = 0;
         public int ID { get; private set; }
@@ -97,7 +97,7 @@ namespace Environment.Body.Sensor
                 {
                     if (item.X == x && item.Y == y) { continue; }
                     double dist = Math.Sqrt((ppx - item.X) * (ppx - item.X) + (ppy - item.Y) * (ppy - item.Y));
-                    if (dist < BaseBody.Size / 2 && dist < distmin) { ret = mb; distmin = dist; col = true; }
+                    if (dist < item.Size / 2 && dist < distmin) { ret = mb; distmin = dist; col = true; }
                 }
                 if (col)
                 { break; }

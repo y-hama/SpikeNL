@@ -9,6 +9,8 @@ namespace Environment
 {
     public static class Core
     {
+        public static Body.Parameter LatestParameter { get; private set; }
+
         public static Bitmap View
         {
             get { return Background.Vision.Image; }
@@ -83,18 +85,73 @@ namespace Environment
                 else
                 {
                     item.Update();
+                    if (LatestParameter != null)
+                    {
+                        if (item.AliveTime > LatestParameter.AliveTime * 10)
+                        {
+                            item.Kill();
+                            remlist.Add(item);
+                            Body.BodyList.DeadUnitList.Add(item);
+                        }
+                    }
                 }
             }
+            bool ckg = false;
             foreach (var item in remlist)
             {
                 Body.BodyList.UnitList.Remove(item);
+                if (LatestParameter != null)
+                {
+                    if (LatestParameter.AliveTime < item.QualityAliveTime)
+                    {
+                        LatestParameter = item.Parameter * LatestParameter;
+                    }
+                    var reborn = item.InheritanceNew(LatestParameter, true);
+                    reborn.Growup();
+                    if (reborn != null)
+                    {
+                        AddUnit(reborn);
+                        if (!ckg)
+                        {
+                            ckg = true;
+                            Generation++;
+                        }
+                    }
+                }
             }
             if (Body.BodyList.UnitList.Count == 0)
             {
                 Generation++;
-                foreach (var item in Body.BodyList.DeadUnitList)
+                var fitem = Body.BodyList.DeadUnitList.First(x => Equals(x.QualityAliveTime, Body.BodyList.DeadUnitList.Max(y => y.QualityAliveTime)));
+                var fparam = fitem.Parameter;
+                var slist = new List<Body.BaseBody>(Body.BodyList.DeadUnitList);
+                if (LatestParameter == null)
                 {
-                    var reborn = item.InheritanceNew();
+                    slist.Remove(fitem);
+                }
+                else
+                {
+                    if (LatestParameter.AliveTime < fitem.QualityAliveTime)
+                    {
+                        fparam = LatestParameter;
+                    }
+                    else
+                    {
+                        slist.Remove(fitem);
+                    }
+                }
+                var sitem = slist.First(x => Equals(x.QualityAliveTime, slist.Max(y => y.QualityAliveTime)));
+                LatestParameter = fparam * sitem.Parameter;
+                var source = Body.BodyList.DeadUnitList[0];
+                int count = Body.BodyList.DeadUnitList.Count;
+                var reborn = source.InheritanceNew(fparam, true);
+                if (reborn != null)
+                {
+                    AddUnit(reborn);
+                }
+                for (int i = 1; i < count; i++)
+                {
+                    reborn = source.InheritanceNew(LatestParameter, true);
                     if (reborn != null)
                     {
                         AddUnit(reborn);
@@ -119,8 +176,8 @@ namespace Environment
 
                 if (Body.BodyList.UnitList.Count > 0)
                 {
-                    var rep = Body.BodyList.UnitList[0];
-                    g.DrawEllipse(new Pen(Color.MediumVioletRed, 5), new Rectangle((int)(rep.X - Body.BaseBody.Size / 4), (int)(rep.Y - Body.BaseBody.Size / 4), (int)Body.BaseBody.Size / 2, (int)Body.BaseBody.Size / 2));
+                    var rep = Body.BodyList.UnitList.First(x => Equals(x.QualityAliveTime, Body.BodyList.UnitList.Max(y => y.QualityAliveTime)));
+                    g.DrawEllipse(new Pen(Color.LightCyan, 5), new Rectangle((int)(rep.X - rep.Size / 4), (int)(rep.Y - rep.Size / 4), (int)rep.Size / 2, (int)rep.Size / 2));
 
                     Bitmap repView;
                     rep.ViewImage(out repView);

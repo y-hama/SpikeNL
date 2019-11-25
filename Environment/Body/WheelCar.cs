@@ -10,14 +10,14 @@ namespace Environment.Body
     public abstract class WheelCar : BaseBody
     {
 
-        #region Property/Field
-        public double WheelRadius { get; set; } = 2.5;
+        #region Property 
+        public double WMax { get { return Parameter.Gene.WMax; } protected set { Parameter.Gene.WMax = value; } }
+        public double wl { get { return Parameter.wl; } protected set { Parameter.wl = value; } }
+        public double wr { get { return Parameter.wr; } protected set { Parameter.wr = value; } }
+        public double Inertia { get { return Parameter.Inertia; } protected set { Parameter.Inertia = value; } }
+        public double Error { get { return Parameter.Error; } protected set { Parameter.Error = value; } }
+        public double WheelRadius { get { return Parameter.WheelRadius; } protected set { Parameter.WheelRadius = value; } }
 
-        public double Error { get; set; } = 0.025;
-        public double Inertia { get; set; } = 0.85;
-
-        private double wr { get; set; }
-        private double wl { get; set; }
         #endregion
 
         public void SetWheel(double l, double r)
@@ -36,7 +36,7 @@ namespace Environment.Body
                 l += Error * (random.NextDouble() * 2 - 1);
                 r += Error * (random.NextDouble() * 2 - 1);
                 double n = Math.Sqrt(l * l + r * r);
-                if (n > 1)
+                if (n > WMax)
                 {
                     l /= n; r /= n;
                 }
@@ -96,6 +96,8 @@ namespace Environment.Body
 
             }
             Vx = (X - cX); Vy = (Y - cY);
+            AliveTime++;
+            QualityAliveTime += V;
         }
     }
 }
